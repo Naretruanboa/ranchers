@@ -1,0 +1,26 @@
+check logs master or worker
+1. journalctl -u rancher-system-agent.service
+
+
+The below steps use a script to automate the clean of a node, the commands used can be run manually as needed, follow the steps below cleaning a node that has been used previously in a cluster.
+
+Login to the node and download the cleanup script:
+curl -sLO https://github.com/rancherlabs/support-tools/raw/master/extended-rancher-2-cleanup/extended-cleanup-rancher2.sh
+
+You should now have a copy of the script in the current directory.
+
+Run the script:
+sudo bash extended-cleanup-rancher2.sh
+
+If desired, the optional -f and -i flags can be used together or individually to flush iptables (-f) and delete container images (-i).
+
+sudo bash extended-cleanup-rancher2.sh -f -i
+
+Restart the node
+The node is now in a clean consistent state to be reused in a cluster.
+
+
+
+# system-agent-uninstall
+
+curl -sLO https://raw.githubusercontent.com/rancher/system-agent/main/system-agent-uninstall.sh
