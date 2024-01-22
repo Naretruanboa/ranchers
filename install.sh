@@ -13,7 +13,7 @@ echo Install kubectl ...
 snap install kubectl --classic
 
 mkdir /root/rancher
-curl -o docker-compose.yaml https://github.com/kapong/ranchers/raw/main/docker-compose.yml
+wget https://github.com/kapong/ranchers/raw/main/docker-compose.yml
 
 cd /root/rancher
 docker compose up -d
