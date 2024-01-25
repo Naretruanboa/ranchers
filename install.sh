@@ -39,7 +39,7 @@ wget https://github.com/kapong/ranchers/raw/main/docker-compose.yml
 docker compose pull
 docker compose up -d
 
-echo "Please wait 2-3 minutes for the installation to complete. You can press Ctrl + C to exit the log."
+echo "Please wait 2-3 minutes for the installation to complete. You can press Ctrl + C to exit the log after password appear."
 
 echo "Bootstrap Password"
 docker logs -f rancher-center  2>&1 | grep "Bootstrap Password:"
