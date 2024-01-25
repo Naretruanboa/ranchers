@@ -30,16 +30,19 @@ sysctl net.bridge.bridge-nf-call-iptables
 echo Install kubectl ...
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+mkdir ~/.kube
 
-mkdir /root/rancher
+mkdir ~/rancher
 
-cd /root/rancher
+cd ~/rancher
 wget https://github.com/kapong/ranchers/raw/main/docker-compose.yml
 
 docker compose pull
 docker compose up -d
 
 echo "Please wait 2-3 minutes for the installation to complete. You can press Ctrl + C to exit the log after password appear."
+sleep 10
+docker cp rancher-center:/etc/rancher/k3s/k3s.yaml ~/.kube/config
 
 echo "Bootstrap Password"
 docker logs -f rancher-center  2>&1 | grep "Bootstrap Password:"
