@@ -36,15 +36,10 @@ mkdir /root/rancher
 cd /root/rancher
 wget https://github.com/kapong/ranchers/raw/main/docker-compose.yml
 
-echo "Done, you should reboot now."
+docker compose pull
+docker compose up -d
 
-echo "After reboot, run this command to start rancher server:" 
-echo "docker compose up -d\n"
-echo "and"
-echo 'docker logs rancher-center  2>&1 | grep "Bootstrap Password:"'
+echo "Please wait 2-3 minutes for the installation to complete. You can press Ctrl + C to exit the log."
 
-# echo "Please wait 2-3 minutes for the installation to complete."
-
-# sleep 180
-# echo "Bootstrap Password"
-# docker logs rancher-center  2>&1 | grep "Bootstrap Password:"
+echo "Bootstrap Password"
+docker logs -f rancher-center  2>&1 | grep "Bootstrap Password:"
