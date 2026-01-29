@@ -1,26 +1,59 @@
-check logs master or worker
-1. journalctl -u rancher-system-agent.service
+# ============================================================================
+# RANCHER MANAGEMENT SERVER - QUICK REFERENCE COMMANDS
+# ============================================================================
 
+## INITIALIZATION (Run Once on Fresh System)
+# ============================================================================
+bash ipv4-bridge.bash                    # Configure kernel networking
+bash install.bash                        # Install Docker, Compose, kubectl
 
-The below steps use a script to automate the clean of a node, the commands used can be run manually as needed, follow the steps below cleaning a node that has been used previously in a cluster.
+## RUNNING RANCHER
+# ============================================================================
+bash start.bash                          # Start Rancher server
+bash get-pwd.bash                        # Get bootstrap password
+docker compose down                      # Stop Rancher
 
-Login to the node and download the cleanup script:
+## MONITORING & STATUS
+# ============================================================================
+docker ps --filter \"name=rancher-center\"  # Check container status
+docker logs rancher-center -f            # View live logs (follow mode)
+docker stats rancher-center              # Monitor resource usage
+docker compose logs -f                   # View compose logs
+curl -k https://localhost/healthz        # Check Rancher health endpoint
+
+## MAINTENANCE & MANAGEMENT
+# ============================================================================
+docker compose restart                   # Restart Rancher
+docker compose ps                        # Show all services
+docker compose exec rancher-center bash  # Access container shell
+docker inspect rancher-center            # View container configuration
+docker compose config                    # View resolved compose config
+
+## DATA MANAGEMENT & BACKUPS
+# ============================================================================
+tar -czf rancher-backup-$(date +%Y%m%d).tar.gz lib/  # Backup all data
+docker compose down -v                   # Remove containers and volumes
+bash extended-cleanup-rancher2.sh        # Deep cleanup for cluster nodes
+bash extended-cleanup-rancher2.sh -f -i  # Flush iptables and delete images
+
+## NETWORK DIAGNOSTICS
+# ============================================================================
+sudo lsof -i :80                         # Check if port 80 is in use
+sudo lsof -i :443                        # Check if port 443 is in use
+sudo lsof -i :6443                       # Check if port 6443 is in use
+docker network ls                        # List all Docker networks
+docker network inspect rancher-net       # Inspect Rancher network
+
+## SYSTEM-AGENT (For Managed Cluster Nodes)
+# ============================================================================
+# Check logs from master or worker node
+journalctl -u rancher-system-agent.service
+journalctl -u rancher-system-agent.service -f  # Follow mode
+
+# Download and run cleanup script on managed node
 curl -sLO https://github.com/rancherlabs/support-tools/raw/master/extended-rancher-2-cleanup/extended-cleanup-rancher2.sh
-
-You should now have a copy of the script in the current directory.
-
-Run the script:
 sudo bash extended-cleanup-rancher2.sh
 
-If desired, the optional -f and -i flags can be used together or individually to flush iptables (-f) and delete container images (-i).
-
-sudo bash extended-cleanup-rancher2.sh -f -i
-
-Restart the node
-The node is now in a clean consistent state to be reused in a cluster.
-
-
-
-# system-agent-uninstall
-
+# Uninstall system-agent from managed node
 curl -sLO https://raw.githubusercontent.com/rancher/system-agent/main/system-agent-uninstall.sh
+bash system-agent-uninstall.sh

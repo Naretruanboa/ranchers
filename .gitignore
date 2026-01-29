@@ -1,0 +1,28 @@
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Sensitive data and certificates
+lib/rancher/
+lib/certs/
+*.key
+*.crt
+*.pem
+*.p12
+
+# Docker/IDE artifacts
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Backup files
+*.backup
+*.tar.gz
+rancher-backup-*.tar.gz
+
+# Logs
+*.log

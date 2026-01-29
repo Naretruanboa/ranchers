@@ -1,11 +1,60 @@
-version: '3'
+version: '3.8'
+
 services:
   ranchers:
-    image: rancher/rancher:latest
+    # Rancher v2.7.x - stable management server version
+    image: rancher/rancher:v2.7.11
     container_name: rancher-center
-    network_mode: host
-    privileged: true
+    
+    # Use custom network for better security isolation
+    networks:
+      - rancher-net
+    
+    # Expose ports: 80 (HTTP redirect), 443 (HTTPS), 6443 (API)
+    ports:
+      - "80:80"
+      - "443:443"
+      - "6443:6443"
+    
+    # Resource limits for stability
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+    
+    # Health check for monitoring
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Environment configuration for security and bootstrap
+    environment:
+      - CATTLE_BOOTSTRAP_PASSWORD=${CATTLE_BOOTSTRAP_PASSWORD:-admin@123}
+      - CATTLE_SERVER_URL=https://${SERVER_HOSTNAME:-localhost}
+    
+    # Persistent volumes for Rancher data and certificates
     volumes:
-      - ./lib/rancher/:/var/lib/rancher
-      - ./lib/certs:/var/lib/ca-certificates
+      - rancher-data:/var/lib/rancher
+      - rancher-certs:/var/lib/ca-certificates
+    
+    # Restart policy for high availability
     restart: unless-stopped
+
+# Named volumes for better management
+volumes:
+  rancher-data:
+    driver: local
+  rancher-certs:
+    driver: local
+
+# Custom network for container isolation
+networks:
+  rancher-net:
+    driver: bridge
